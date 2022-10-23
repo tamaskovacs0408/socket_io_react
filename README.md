@@ -40,7 +40,7 @@ io.on("connection", (socket) => {
   })
 
   socket.on("send_message", (data) => {
-    socket.broadcast.emit("receive_message", data)
+    socket.to(data.room).emit("receive_message", data)
   })
 })
 
@@ -50,10 +50,50 @@ server.listen(8000, () => {
 ```
 **Frontend**
 
-Import `io` from the `socket.io-client` library and then create a variable as `socket` and pass `io.connect()` with the url of the backend file. Here, it will be the `http//localhost:8000`, because we running the Express server on port 8000`.
+Import `io` from the `socket.io-client` library and then create a variable as `socket` and pass `io.connect()` with the URL of the backend file. Here, it will be the `http//localhost:8000`, because we running the Express server on port 8000`.
 
 ```js
-import io from 'socket.io-client'
+import "./App.css";
+import io from "socket.io-client";
+import { useEffect, useState } from "react";
 
-const socket = io.connect("http://localhost:8000")
+const socket = io.connect("http://localhost:8000");
+
+function App() {
+  const [message, setMessage] = useState("");
+  const [messageReceived, setMessageReceived] = useState('');
+  const [room, setRoom] = useState('');
+
+  const joinRoom = () => {
+    if (room !== "") {
+      socket.emit("join_room", room)
+    }
+  }
+
+  const sendMessage = () => {
+    socket.emit("send_message", { message: message });
+  };
+
+  useEffect(() => {
+    socket.on("receive_message", (data) => {
+      setMessageReceived(data.message);
+    });
+  }, [socket]);
+  return (
+    <div className="App">
+      <input placeholder="Room number" onChange={(e) => {setRoom(e.target.value)}}/>
+      <button onClick={joinRoom}>Join Room</button>
+      <input
+        placeholder="Message"
+        onChange={(e) => {
+          setMessage(e.target.value);
+        }}
+      />
+      <button onClick={sendMessage}>Send Message</button>
+      <h1>Message: {messageReceived}</h1>
+    </div>
+  );
+}
+
+export default App;
 ```
