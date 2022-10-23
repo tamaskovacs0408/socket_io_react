@@ -37,3 +37,12 @@ server.listen(8000, () => {
   console.log("Server is running")
 })
 ```
+**Frontend**
+
+Import `io` from the `socket.io-client` library and then create a variable as `socket` and pass `io.connect()` with the url of the backend file. Here, it will be the `http//localhost:8000`, because we running the Express server on port 8000`.
+
+```js
+import io from 'socket.io-client'
+
+const socket = io.connect("http://localhost:8000")
+```
