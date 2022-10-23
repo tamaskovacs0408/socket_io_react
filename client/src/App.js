@@ -6,7 +6,7 @@ const socket = io.connect("http://localhost:8000");
 function App() {
 
   const sendMessage = () => {
-    //socket.emit()
+    socket.emit("send_message", {message: "Hello"});
   }
 
   return (
